@@ -1,6 +1,175 @@
-<!doctype html>
+from flask import Flask, render_template_string, g, url_for
+import sqlite3, os, urllib.parse
+
+# Flask app serving static files from project root
+app = Flask(__name__, static_folder='.', static_url_path='')
+DATABASE = 'projects.db'
+
+# Map project titles to local image files
+project_images = {
+    "Centro Comunitário de Esportes": "esportes.png",
+    "Jardim Comunitário para Seniores": "jardim.png",
+    "Programa Musical Juvenil": "musical.png",
+    "Oficinas de Inclusão Digital": "digital.png",
+    "Conservação Ambiental": "ambiental.png",
+    "Campanha de Acesso à Saúde": "saude.png",
+    "Bolsas de Estudo": "estudo.png",
+    "Restauração do Patrimônio Cultural": "cultural.png",
+    "Projeto Água Limpa": "agua.png",
+    "Expansão do Banco de Alimentos": "alimentos.png"
+}
+
+# Detailed Portuguese descriptions
+project_descriptions = {
+    "Centro Comunitário de Esportes": (
+        "O Centro Comunitário de Esportes visa construir uma instalação multifuncional com quadras de futebol, basquete e vôlei, "
+        "equipada com iluminação noturna e vestiários acessíveis. Pretendemos oferecer programas semanais de treinamento para crianças "
+        "de famílias de baixa renda e idosos, conduzidos por profissionais voluntários e estagiários de Educação Física. Além das aulas "
+        "regulares, serão realizados torneios mensais, oficinas de nutrição esportiva e palestras sobre prevenção de lesões. O projeto "
+        "inclui plataforma web para inscrição online e relatórios de impacto social."
+    ),
+    "Jardim Comunitário para Seniores": (
+        "O Jardim Comunitário para Seniores transforma terrenos subutilizados em hortas e canteiros de flores, promovendo terapia "
+        "ocupacional e contato com a natureza. Idosos recebem sementes, ferramentas adaptadas e orientação de agrônomos voluntários. "
+        "Eventos mensais de colheita compartilhada envolvem familiares e ONGs, fortalecendo laços intergeracionais. O espaço é acessível, "
+        "com caminhos amplos e áreas de descanso, além de programas de inclusão digital para registro de atividades."
+    ),
+    "Programa Musical Juvenil": (
+        "O Programa Musical Juvenil oferece aulas de violão, teclado e percussão para jovens em situação de vulnerabilidade. Parcerias "
+        "com conservatórios promovem masterclasses e bolsas para apresentações. Formam-se bandas e grupos de câmara que se apresentam "
+        "em concertos abertos à comunidade, e um canal online transmite performances ao vivo, atraindo patrocinadores e expandindo visibilidade."
+    ),
+    "Oficinas de Inclusão Digital": (
+        "Oficinas de Inclusão Digital ensinam informática básica, uso de smartphones e navegação segura. Aulas práticas cobrem e-mail, "
+        "planilhas e processadores de texto. Participantes recebem dispositivos emprestados e suporte técnico, e mentores voluntários "
+        "oferecem tutoria personalizada e certificação ao final do curso."
+    ),
+    "Conservação Ambiental": (
+        "Iniciativa de reflorestação e limpeza de rios e parques urbanos. Voluntários e especialistas plantam mudas nativas, monitoram "
+        "fauna local e promovem oficinas de educação ambiental em escolas. São instaladas estações de coleta de recicláveis e realizadas "
+        "campanhas de redução de plástico, com relatórios periódicos de impacto."
+    ),
+    "Campanha de Acesso à Saúde": (
+        "Campanha com clínicas móveis oferecendo consultas, aferição de pressão arterial, vacinação e exames básicos em áreas rurais "
+        "e favelas. Equipe médica voluntária atende população sem acesso ao sistema de saúde, complementada por palestras de prevenção "
+        "de doenças e distribuição de kits de higiene."
+    ),
+    "Bolsas de Estudo": (
+        "Programa de Bolsas de Estudo para estudantes de baixa renda no ensino médio e superior. Seleção baseada em desempenho acadêmico "
+        "e projeto social, com mentoria, orientação vocacional e acompanhamento psicológico. Seminários com ex-alunos criam networking e "
+        "oportunidades de estágio."
+    ),
+    "Restauração do Patrimônio Cultural": (
+        "Restauração de edifícios históricos e murais artísticos. Arquitetos voluntários conduzem avaliação estrutural, limpeza de fachadas "
+        "e restauração de ornamentos. Oficinas públicas ensinam técnicas de conservação e valorização da memória local."
+    ),
+    "Projeto Água Limpa": (
+        "Instalação de sistemas de filtragem comunitária e pontos de distribuição de água potável. Engenheiros capacitam moradores para "
+        "manutenção preventiva e monitoramento de qualidade da água, com testes periódicos e painéis informativos."
+    ),
+    "Expansão do Banco de Alimentos": (
+        "Expansão do Banco de Alimentos moderniza infraestrutura com câmaras frias e otimiza logística de distribuição. Parcerias reduzem "
+        "desperdício e ações de educação nutricional incluem aulas de culinária comunitária."
+    )
+}
+
+# Database connection helper
+
+def get_db():
+    if 'db' not in g:
+        g.db = sqlite3.connect(DATABASE)
+        g.db.row_factory = sqlite3.Row
+    return g.db
+
+@app.teardown_appcontext
+
+def close_db(exception=None):
+    db = g.pop('db', None)
+    if db:
+        db.close()
+
+# Initialize or recreate the database
+
+def init_db():
+    if os.path.exists(DATABASE):
+        os.remove(DATABASE)
+    conn = sqlite3.connect(DATABASE)
+    cur = conn.cursor()
+    cur.execute('''
+        CREATE TABLE projects(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            description TEXT,
+            budget REAL,
+            contributions REAL
+        )
+    ''')
+    budgets = [(50000,15000),(30000,10000),(40000,25000),(20000,5000),(35000,20000),
+               (60000,30000),(45000,12000),(55000,22000),(25000,15000),(32000,18000)]
+    samples = [(name, project_descriptions[name], b, c) for (name, _), (b, c) in zip(project_descriptions.items(), budgets)]
+    cur.executemany('INSERT INTO projects(name,description,budget,contributions) VALUES(?,?,?,?)', samples)
+    conn.commit()
+    conn.close()
+
+# Render projects list
+
+def render_projects():
+    db = get_db()
+    rows = db.execute('SELECT name,description,budget,contributions FROM projects').fetchall()
+    projects = []
+    for r in rows:
+        name = r['name']
+        desc = r['description']
+        budget = r['budget']
+        contrib = r['contributions']
+        img_file = project_images.get(name)
+        # Correct indentation for image selection
+        if img_file and os.path.exists(img_file):
+            # Use relative filename for GitHub Pages
+            img_url = img_file
+        else:
+            seed = urllib.parse.quote_plus(name)
+            img_url = f"https://picsum.photos/seed/{seed}/800/300"
+        projects.append({
+            'name': name,
+            'description': desc,
+            'budget': budget,
+            'contributions': contrib,
+            'image_url': img_url
+        })
+    return projects
+
+# Routes
+@app.route('/')
+def index():
+    return render_template_string(INDEX_HTML, projects=render_projects())
+
+@app.route('/about')
+def about():
+    return render_template_string(ABOUT_HTML)
+
+# Generate static files and run
+
+def generate_static():
+    init_db()
+    with app.app_context():
+        idx = render_template_string(INDEX_HTML, projects=render_projects())
+        idx = idx.replace('href="/"', 'href="index.html"')
+        idx = idx.replace('href="/about"', 'href="about.html"')
+        with open('index.html', 'w', encoding='utf-8') as f:
+            f.write(idx)
+        abt = render_template_string(ABOUT_HTML)
+        abt = abt.replace('href="/"', 'href="index.html"')
+        abt = abt.replace('href="/about"', 'href="about.html"')
+        with open('about.html', 'w', encoding='utf-8') as f:
+            f.write(abt)
+    print("Static files: index.html, about.html generated")
+
+# HTML Templates
+INDEX_HTML = '''<!doctype html>
 <html lang="pt-BR">
 <head>
+  <base href="./">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Projetos Sociais para Investimento</title>
@@ -25,100 +194,57 @@
   <div class="logo-container">
     <img src="https://brandcenter.rotary.org/-/jssmedia/project/rotary/brandcenter/rotarymbs-simple_rgb.png" alt="Logo Rotary" class="logo">
   </div>
-  <nav><a href="index.html">Início</a><a href="about.html">Benefícios</a></nav>
+  <nav><a href="/">Início</a><a href="/about">Benefícios</a></nav>
   <div class="container">
     <h1 class="page-title">Projetos Sociais para Investimento</h1>
-    
+    {% for p in projects %}
       <div class="project-card">
-        <img src="esportes.png" alt="Centro Comunitário de Esportes" class="project-image">
-        <h2>Centro Comunitário de Esportes</h2>
-        <p class="project-desc">O Centro Comunitário de Esportes visa construir uma instalação multifuncional com quadras de futebol, basquete e vôlei, equipada com iluminação noturna e vestiários acessíveis. Pretendemos oferecer programas semanais de treinamento para crianças de famílias de baixa renda e idosos, conduzidos por profissionais voluntários e estagiários de Educação Física. Além das aulas regulares, serão realizados torneios mensais, oficinas de nutrição esportiva e palestras sobre prevenção de lesões. O projeto inclui plataforma web para inscrição online e relatórios de impacto social.</p>
-        <p><span class="label">Orçamento:</span> R$ 50,000.00</p>
-        <p><span class="label">Contribuições:</span> R$ 15,000.00</p>
-        <p><span class="label">Progresso:</span> <meter value="15000.0" min="0" max="50000.0"></meter> 30.0%</p>
+        <img src="{{p.image_url}}" alt="{{p.name}}" class="project-image">
+        <h2>{{p.name}}</h2>
+        <p class="project-desc">{{p.description}}</p>
+        <p><span class="label">Orçamento:</span> R$ {{"{:,.2f}".format(p.budget)}}</p>
+        <p><span class="label">Contribuições:</span> R$ {{"{:,.2f}".format(p.contributions)}}</p>
+        <p><span class="label">Progresso:</span> <meter value="{{p.contributions}}" min="0" max="{{p.budget}}"></meter> {{"{:.1%}".format(p.contributions/p.budget)}}</p>
       </div>
-    
-      <div class="project-card">
-        <img src="jardim.png" alt="Jardim Comunitário para Seniores" class="project-image">
-        <h2>Jardim Comunitário para Seniores</h2>
-        <p class="project-desc">O Jardim Comunitário para Seniores transforma terrenos subutilizados em hortas e canteiros de flores, promovendo terapia ocupacional e contato com a natureza. Idosos recebem sementes, ferramentas adaptadas e orientação de agrônomos voluntários. Eventos mensais de colheita compartilhada envolvem familiares e ONGs, fortalecendo laços intergeracionais. O espaço é acessível, com caminhos amplos e áreas de descanso, além de programas de inclusão digital para registro de atividades.</p>
-        <p><span class="label">Orçamento:</span> R$ 30,000.00</p>
-        <p><span class="label">Contribuições:</span> R$ 10,000.00</p>
-        <p><span class="label">Progresso:</span> <meter value="10000.0" min="0" max="30000.0"></meter> 33.3%</p>
-      </div>
-    
-      <div class="project-card">
-        <img src="musical.png" alt="Programa Musical Juvenil" class="project-image">
-        <h2>Programa Musical Juvenil</h2>
-        <p class="project-desc">O Programa Musical Juvenil oferece aulas de violão, teclado e percussão para jovens em situação de vulnerabilidade. Parcerias com conservatórios promovem masterclasses e bolsas para apresentações. Formam-se bandas e grupos de câmara que se apresentam em concertos abertos à comunidade, e um canal online transmite performances ao vivo, atraindo patrocinadores e expandindo visibilidade.</p>
-        <p><span class="label">Orçamento:</span> R$ 40,000.00</p>
-        <p><span class="label">Contribuições:</span> R$ 25,000.00</p>
-        <p><span class="label">Progresso:</span> <meter value="25000.0" min="0" max="40000.0"></meter> 62.5%</p>
-      </div>
-    
-      <div class="project-card">
-        <img src="digital.png" alt="Oficinas de Inclusão Digital" class="project-image">
-        <h2>Oficinas de Inclusão Digital</h2>
-        <p class="project-desc">Oficinas de Inclusão Digital ensinam informática básica, uso de smartphones e navegação segura. Aulas práticas cobrem e-mail, planilhas e processadores de texto. Participantes recebem dispositivos emprestados e suporte técnico, e mentores voluntários oferecem tutoria personalizada e certificação ao final do curso.</p>
-        <p><span class="label">Orçamento:</span> R$ 20,000.00</p>
-        <p><span class="label">Contribuições:</span> R$ 5,000.00</p>
-        <p><span class="label">Progresso:</span> <meter value="5000.0" min="0" max="20000.0"></meter> 25.0%</p>
-      </div>
-    
-      <div class="project-card">
-        <img src="ambiental.png" alt="Conservação Ambiental" class="project-image">
-        <h2>Conservação Ambiental</h2>
-        <p class="project-desc">Iniciativa de reflorestação e limpeza de rios e parques urbanos. Voluntários e especialistas plantam mudas nativas, monitoram fauna local e promovem oficinas de educação ambiental em escolas. São instaladas estações de coleta de recicláveis e realizadas campanhas de redução de plástico, com relatórios periódicos de impacto.</p>
-        <p><span class="label">Orçamento:</span> R$ 35,000.00</p>
-        <p><span class="label">Contribuições:</span> R$ 20,000.00</p>
-        <p><span class="label">Progresso:</span> <meter value="20000.0" min="0" max="35000.0"></meter> 57.1%</p>
-      </div>
-    
-      <div class="project-card">
-        <img src="saude.png" alt="Campanha de Acesso à Saúde" class="project-image">
-        <h2>Campanha de Acesso à Saúde</h2>
-        <p class="project-desc">Campanha com clínicas móveis oferecendo consultas, aferição de pressão arterial, vacinação e exames básicos em áreas rurais e favelas. Equipe médica voluntária atende população sem acesso ao sistema de saúde, complementada por palestras de prevenção de doenças e distribuição de kits de higiene.</p>
-        <p><span class="label">Orçamento:</span> R$ 60,000.00</p>
-        <p><span class="label">Contribuições:</span> R$ 30,000.00</p>
-        <p><span class="label">Progresso:</span> <meter value="30000.0" min="0" max="60000.0"></meter> 50.0%</p>
-      </div>
-    
-      <div class="project-card">
-        <img src="estudo.png" alt="Bolsas de Estudo" class="project-image">
-        <h2>Bolsas de Estudo</h2>
-        <p class="project-desc">Programa de Bolsas de Estudo para estudantes de baixa renda no ensino médio e superior. Seleção baseada em desempenho acadêmico e projeto social, com mentoria, orientação vocacional e acompanhamento psicológico. Seminários com ex-alunos criam networking e oportunidades de estágio.</p>
-        <p><span class="label">Orçamento:</span> R$ 45,000.00</p>
-        <p><span class="label">Contribuições:</span> R$ 12,000.00</p>
-        <p><span class="label">Progresso:</span> <meter value="12000.0" min="0" max="45000.0"></meter> 26.7%</p>
-      </div>
-    
-      <div class="project-card">
-        <img src="cultural.png" alt="Restauração do Patrimônio Cultural" class="project-image">
-        <h2>Restauração do Patrimônio Cultural</h2>
-        <p class="project-desc">Restauração de edifícios históricos e murais artísticos. Arquitetos voluntários conduzem avaliação estrutural, limpeza de fachadas e restauração de ornamentos. Oficinas públicas ensinam técnicas de conservação e valorização da memória local.</p>
-        <p><span class="label">Orçamento:</span> R$ 55,000.00</p>
-        <p><span class="label">Contribuições:</span> R$ 22,000.00</p>
-        <p><span class="label">Progresso:</span> <meter value="22000.0" min="0" max="55000.0"></meter> 40.0%</p>
-      </div>
-    
-      <div class="project-card">
-        <img src="agua.png" alt="Projeto Água Limpa" class="project-image">
-        <h2>Projeto Água Limpa</h2>
-        <p class="project-desc">Instalação de sistemas de filtragem comunitária e pontos de distribuição de água potável. Engenheiros capacitam moradores para manutenção preventiva e monitoramento de qualidade da água, com testes periódicos e painéis informativos.</p>
-        <p><span class="label">Orçamento:</span> R$ 25,000.00</p>
-        <p><span class="label">Contribuições:</span> R$ 15,000.00</p>
-        <p><span class="label">Progresso:</span> <meter value="15000.0" min="0" max="25000.0"></meter> 60.0%</p>
-      </div>
-    
-      <div class="project-card">
-        <img src="alimentos.png" alt="Expansão do Banco de Alimentos" class="project-image">
-        <h2>Expansão do Banco de Alimentos</h2>
-        <p class="project-desc">Expansão do Banco de Alimentos moderniza infraestrutura com câmaras frias e otimiza logística de distribuição. Parcerias reduzem desperdício e ações de educação nutricional incluem aulas de culinária comunitária.</p>
-        <p><span class="label">Orçamento:</span> R$ 32,000.00</p>
-        <p><span class="label">Contribuições:</span> R$ 18,000.00</p>
-        <p><span class="label">Progresso:</span> <meter value="18000.0" min="0" max="32000.0"></meter> 56.2%</p>
-      </div>
-    
+    {% endfor %}
   </div>
 </body>
-</html>
+</html>'''
+
+ABOUT_HTML = '''<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Benefícios de Contribuir</title>
+  <style>
+    :root { --rotary-blue:#17458f; --rotary-gold:#f7a81b; }
+    body{margin:0;font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
+    .logo-container{text-align:left;padding:1rem;background:#fff;}
+    .logo{height:44px;}
+    nav{background:var(--rotary-blue);padding:0.5rem 1rem;}
+    nav a{color:#fff;margin-right:1rem;text-decoration:none;font-weight:600;}
+    .container{max-width:800px;margin:2rem auto;padding:0 1rem;}
+    h1{font-size:2.25rem;color:#000;margin-bottom:1rem;}
+    ul{line-height:1.6;font-size:1.05rem;}
+  </style>
+</head>
+<body>
+  <div class="logo-container">
+    <img src="https://brandcenter.rotary.org/-/jssmedia/project/rotary/brandcenter/rotarymbs-simple_rgb.png" alt="Logo Rotary" class="logo">
+  </div>
+  <nav><a href="/">Início</a><a href="/about">Benefícios</a></nav>
+  <div class="container">
+    <h1>Benefícios de Contribuir</h1>
+    <ul>
+      <li><strong>Visibilidade de Marca:</strong> Destaque em materiais e canais de comunicação.</li>
+      <li><strong>Incentivos Fiscais:</strong> Doações dedutíveis via Lei Rouanet.</li>
+      <li><strong>Responsabilidade Social:</strong> Fortaleça sua reputação.</li>
+    </ul>
+  </div>
+</body>
+</html>'''
+
+if __name__ == '__main__':
+    generate_static()
+    app.run(debug=True)
