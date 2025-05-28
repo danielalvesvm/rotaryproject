@@ -1,165 +1,163 @@
+
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <base href="./">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Projetos Sociais para Investimento</title>
+  <title>Projetos Sociais | Rotary</title>
+  
   <style>
-    :root {--rotary-blue:#17458f;--rotary-gold:#f7a81b;--rotary-azure:#0067c8;}
-    body{margin:0;font-family:'Segoe UI',sans-serif;background:#f5f5f5;} 
-    .logo-container{text-align:left;padding:1rem;background:#fff;} 
-    .logo{height:44px;} 
-    nav{background:var(--rotary-blue);padding:0.5rem 1rem;} 
-    nav a{color:#fff;margin-right:1rem;text-decoration:none;font-weight:600;} 
-    .container{max-width:1200px;margin:2rem auto;padding:0 1rem;} 
-    .page-title{font-size:2.25rem;color:#000;margin-bottom:1.5rem;} 
-    .project-card{display:flex;gap:1rem;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);margin-bottom:2rem;padding:1.5rem;} 
-    .project-details{width:30%;} 
-    .project-image-container{width:70%;} 
-    .project-image{width:100%;border-radius:4px;} 
-    h2{color:var(--rotary-gold);font-size:1.75rem;margin-bottom:0.5rem;} 
-    .project-desc{font-size:1.1rem;line-height:1.6;margin-bottom:1rem;} 
-    .label{font-weight:600;} 
-    meter{width:100%;height:1.25rem;accent-color:var(--rotary-azure);}  
+    :root {
+      --rotary-blue:#17458f;
+      --rotary-gold:#f7a81b;
+      --rotary-azure:#0067c8;
+      --sidebar-bg:#1f2d3d;
+      --sidebar-card:#27384d;
+      --sidebar-active:#365d8a;
+      --text-light:#ecf0f1;
+    }
+    html,body {
+      height:100%; margin:0;
+      font-family:'Segoe UI',sans-serif;
+      background:#f5f5f5; overflow:hidden;
+    }
+    /* Header and nav */
+    #topbar {
+      background:#fff; padding:0.75rem 1rem;
+      display:flex; align-items:center;
+    }
+    #topbar img { height:40px; }
+    #topbar h1 { margin:0 1rem; font-size:1.25rem; color:#333; }
+    nav {
+      background:var(--rotary-blue);
+      display:flex;
+      gap:1rem;
+      padding:0.5rem 1rem;
+    }
+    nav a { color:#fff; text-decoration:none; font-weight:600; }
+    /* Layout */
+    #layout { display:flex; height:calc(100% - 104px); }
+    #sidebar {
+      width:350px; background:var(--sidebar-bg);
+      padding:1rem; overflow-y:auto;
+    }
+    #content { flex:1; padding:1.5rem; overflow-y:auto; }
+    .sidebar-title { color:var(--text-light); font-size:1.1rem;
+      margin-bottom:1rem; font-weight:600; }
+    .side-card {
+      display:flex; align-items:center; gap:0.75rem;
+      padding:0.75rem; background:var(--sidebar-card);
+      border-radius:8px; cursor:pointer;
+      transition:background .2s; margin-bottom:1rem;
+      color:var(--text-light);
+    }
+    .side-card img { width:60px; height:40px;
+      border-radius:4px; object-fit:cover;
+    }
+    .side-card:hover, .side-card.active {
+      background:var(--sidebar-active);
+    }
+    .hero {
+      width:100%; max-height:350px;
+      object-fit:cover; border-radius:8px;
+      margin-bottom:1rem;
+    }
+    meter { width:100%; height:1.25rem;
+      accent-color:var(--rotary-azure);
+    }
+    .label { font-weight:600; } p { margin:0.5rem 0; }
+    @media (max-width:700px) { #sidebar { display:none; } }
   </style>
+  
 </head>
 <body>
-  <div class="logo-container"><img src="https://brandcenter.rotary.org/-/jssmedia/project/rotary/brandcenter/rotarymbs-simple_rgb.png" alt="Logo Rotary" class="logo"></div>
-  <nav><a href="index.html">Início</a><a href="about.html">Benefícios</a></nav>
-  <div class="container">
-    <h1 class="page-title">Projetos Sociais para Investimento</h1>
-    
-      <div class="project-card">
-        <div class="project-details">
-          <h2>Centro Comunitário de Esportes</h2>
-          <p class="project-desc">O Centro Comunitário de Esportes visa construir uma instalação multifuncional com quadras de futebol, basquete e vôlei, equipada com iluminação noturna e vestiários acessíveis. Pretendemos oferecer programas semanais de treinamento para crianças de famílias de baixa renda e idosos, conduzidos por profissionais voluntários e estagiários de Educação Física.</p>
-          <p><span class="label">Orçamento:</span> R$ 50,000.00</p>
-          <p><span class="label">Contribuições:</span> R$ 15,000.00</p>
-          <p><span class="label">Progresso:</span> <meter value="15000.0" min="0" max="50000.0"></meter> 30.0%</p>
-        </div>
-        <div class="project-image-container">
-          <img src="esportes.png" alt="Centro Comunitário de Esportes" class="project-image">
-        </div>
-      </div>
-    
-      <div class="project-card">
-        <div class="project-details">
-          <h2>Jardim Comunitário para Seniores</h2>
-          <p class="project-desc">O Jardim Comunitário para Seniores transforma terrenos subutilizados em hortas e canteiros de flores, promovendo terapia ocupacional e contato com a natureza. Idosos recebem sementes, ferramentas adaptadas e orientação de agrônomos voluntários.</p>
-          <p><span class="label">Orçamento:</span> R$ 30,000.00</p>
-          <p><span class="label">Contribuições:</span> R$ 10,000.00</p>
-          <p><span class="label">Progresso:</span> <meter value="10000.0" min="0" max="30000.0"></meter> 33.3%</p>
-        </div>
-        <div class="project-image-container">
-          <img src="jardim.png" alt="Jardim Comunitário para Seniores" class="project-image">
-        </div>
-      </div>
-    
-      <div class="project-card">
-        <div class="project-details">
-          <h2>Programa Musical Juvenil</h2>
-          <p class="project-desc">O Programa Musical Juvenil oferece aulas de violão, teclado e percussão para jovens em situação de vulnerabilidade. Parcerias com conservatórios promovem masterclasses e bolsas para apresentações. Bands formadas apresentam-se em concertos comunitários.</p>
-          <p><span class="label">Orçamento:</span> R$ 40,000.00</p>
-          <p><span class="label">Contribuições:</span> R$ 25,000.00</p>
-          <p><span class="label">Progresso:</span> <meter value="25000.0" min="0" max="40000.0"></meter> 62.5%</p>
-        </div>
-        <div class="project-image-container">
-          <img src="musical.png" alt="Programa Musical Juvenil" class="project-image">
-        </div>
-      </div>
-    
-      <div class="project-card">
-        <div class="project-details">
-          <h2>Oficinas de Inclusão Digital</h2>
-          <p class="project-desc">Oficinas de Inclusão Digital ensinam informática básica, uso de smartphones e navegação segura. Aulas práticas incluem e-mail, planilhas e processadores de texto, com tutoria de mentores voluntários e certificação ao término.</p>
-          <p><span class="label">Orçamento:</span> R$ 20,000.00</p>
-          <p><span class="label">Contribuições:</span> R$ 5,000.00</p>
-          <p><span class="label">Progresso:</span> <meter value="5000.0" min="0" max="20000.0"></meter> 25.0%</p>
-        </div>
-        <div class="project-image-container">
-          <img src="digital.png" alt="Oficinas de Inclusão Digital" class="project-image">
-        </div>
-      </div>
-    
-      <div class="project-card">
-        <div class="project-details">
-          <h2>Conservação Ambiental</h2>
-          <p class="project-desc">Iniciativa de reflorestação e limpeza de rios e parques urbanos. Voluntários plantam mudas nativas, monitoram fauna local e promovem oficinas de educação ambiental. Instalam-se estações de coleta de recicláveis e relatórios documentam impacto.</p>
-          <p><span class="label">Orçamento:</span> R$ 35,000.00</p>
-          <p><span class="label">Contribuições:</span> R$ 20,000.00</p>
-          <p><span class="label">Progresso:</span> <meter value="20000.0" min="0" max="35000.0"></meter> 57.1%</p>
-        </div>
-        <div class="project-image-container">
-          <img src="ambiental.png" alt="Conservação Ambiental" class="project-image">
-        </div>
-      </div>
-    
-      <div class="project-card">
-        <div class="project-details">
-          <h2>Campanha de Acesso à Saúde</h2>
-          <p class="project-desc">Campanha com clínicas móveis oferecendo consultas, aferição de pressão arterial, vacinação e exames básicos em áreas rurais e favelas.</p>
-          <p><span class="label">Orçamento:</span> R$ 60,000.00</p>
-          <p><span class="label">Contribuições:</span> R$ 30,000.00</p>
-          <p><span class="label">Progresso:</span> <meter value="30000.0" min="0" max="60000.0"></meter> 50.0%</p>
-        </div>
-        <div class="project-image-container">
-          <img src="saude.png" alt="Campanha de Acesso à Saúde" class="project-image">
-        </div>
-      </div>
-    
-      <div class="project-card">
-        <div class="project-details">
-          <h2>Bolsas de Estudo</h2>
-          <p class="project-desc">Programa de Bolsas de Estudo para estudantes de baixa renda no ensino médio e superior, com mentoria, orientação vocacional e apoio psicológico.</p>
-          <p><span class="label">Orçamento:</span> R$ 45,000.00</p>
-          <p><span class="label">Contribuições:</span> R$ 12,000.00</p>
-          <p><span class="label">Progresso:</span> <meter value="12000.0" min="0" max="45000.0"></meter> 26.7%</p>
-        </div>
-        <div class="project-image-container">
-          <img src="estudo.png" alt="Bolsas de Estudo" class="project-image">
-        </div>
-      </div>
-    
-      <div class="project-card">
-        <div class="project-details">
-          <h2>Restauração do Patrimônio Cultural</h2>
-          <p class="project-desc">Projeto de restauração de edifícios históricos e murais artísticos, com avaliação estrutural, limpeza de fachadas e oficinas de restauro.</p>
-          <p><span class="label">Orçamento:</span> R$ 55,000.00</p>
-          <p><span class="label">Contribuições:</span> R$ 22,000.00</p>
-          <p><span class="label">Progresso:</span> <meter value="22000.0" min="0" max="55000.0"></meter> 40.0%</p>
-        </div>
-        <div class="project-image-container">
-          <img src="cultural.png" alt="Restauração do Patrimônio Cultural" class="project-image">
-        </div>
-      </div>
-    
-      <div class="project-card">
-        <div class="project-details">
-          <h2>Projeto Água Limpa</h2>
-          <p class="project-desc">Instalação de sistemas de filtragem comunitária e pontos de distribuição de água potável, com treinamento para manutenção e painéis informativos.</p>
-          <p><span class="label">Orçamento:</span> R$ 25,000.00</p>
-          <p><span class="label">Contribuições:</span> R$ 15,000.00</p>
-          <p><span class="label">Progresso:</span> <meter value="15000.0" min="0" max="25000.0"></meter> 60.0%</p>
-        </div>
-        <div class="project-image-container">
-          <img src="agua.png" alt="Projeto Água Limpa" class="project-image">
-        </div>
-      </div>
-    
-      <div class="project-card">
-        <div class="project-details">
-          <h2>Expansão do Banco de Alimentos</h2>
-          <p class="project-desc">Expansão do Banco de Alimentos com modernização de câmaras frias e otimização de logística, além de ações de educação nutricional.</p>
-          <p><span class="label">Orçamento:</span> R$ 32,000.00</p>
-          <p><span class="label">Contribuições:</span> R$ 18,000.00</p>
-          <p><span class="label">Progresso:</span> <meter value="18000.0" min="0" max="32000.0"></meter> 56.2%</p>
-        </div>
-        <div class="project-image-container">
-          <img src="alimentos.png" alt="Expansão do Banco de Alimentos" class="project-image">
-        </div>
-      </div>
-    
+  <div id="topbar">
+    <img src="https://brandcenter.rotary.org/-/jssmedia/project/rotary/brandcenter/rotarymbs-simple_rgb.png" alt="Rotary Logo">
+    <h1>Projetos Sociais para Investimento</h1>
   </div>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="about.html">Benefícios</a>
+  </nav>
+  <div id="layout">
+    <aside id="sidebar">
+      <h2 class="sidebar-title">Projetos</h2>
+      
+      <div class="side-card" data-name="Centro Comunitário de Esportes">
+        <img src="esportes.png" alt="Centro Comunitário de Esportes">
+        <h3>Centro Comunitário de Esportes</h3>
+      </div>
+      
+      <div class="side-card" data-name="Jardim Comunitário para Seniores">
+        <img src="jardim.png" alt="Jardim Comunitário para Seniores">
+        <h3>Jardim Comunitário para Seniores</h3>
+      </div>
+      
+      <div class="side-card" data-name="Programa Musical Juvenil">
+        <img src="musical.png" alt="Programa Musical Juvenil">
+        <h3>Programa Musical Juvenil</h3>
+      </div>
+      
+      <div class="side-card" data-name="Oficinas de Inclusão Digital">
+        <img src="digital.png" alt="Oficinas de Inclusão Digital">
+        <h3>Oficinas de Inclusão Digital</h3>
+      </div>
+      
+      <div class="side-card" data-name="Conservação Ambiental">
+        <img src="ambiental.png" alt="Conservação Ambiental">
+        <h3>Conservação Ambiental</h3>
+      </div>
+      
+      <div class="side-card" data-name="Campanha de Acesso à Saúde">
+        <img src="saude.png" alt="Campanha de Acesso à Saúde">
+        <h3>Campanha de Acesso à Saúde</h3>
+      </div>
+      
+      <div class="side-card" data-name="Bolsas de Estudo">
+        <img src="estudo.png" alt="Bolsas de Estudo">
+        <h3>Bolsas de Estudo</h3>
+      </div>
+      
+      <div class="side-card" data-name="Restauração do Patrimônio Cultural">
+        <img src="cultural.png" alt="Restauração do Patrimônio Cultural">
+        <h3>Restauração do Patrimônio Cultural</h3>
+      </div>
+      
+      <div class="side-card" data-name="Projeto Água Limpa">
+        <img src="agua.png" alt="Projeto Água Limpa">
+        <h3>Projeto Água Limpa</h3>
+      </div>
+      
+      <div class="side-card" data-name="Expansão do Banco de Alimentos">
+        <img src="alimentos.png" alt="Expansão do Banco de Alimentos">
+        <h3>Expansão do Banco de Alimentos</h3>
+      </div>
+      
+    </aside>
+    <main id="content"></main>
+  </div>
+  <script>
+    const projects = [{"budget": 50000.0, "contributions": 20000.0, "description": "O Centro Comunit\u00e1rio de Esportes visa construir uma instala\u00e7\u00e3o multifuncional com quadras de futebol, basquete e v\u00f4lei, equipada com ilumina\u00e7\u00e3o noturna e vesti\u00e1rios acess\u00edveis. Pretendemos oferecer programas semanais de treinamento para crian\u00e7as de fam\u00edlias de baixa renda e idosos, conduzidos por profissionais volunt\u00e1rios e estagi\u00e1rios de Educa\u00e7\u00e3o F\u00edsica. Al\u00e9m das aulas regulares, ser\u00e3o realizados torneios mensais, oficinas de nutri\u00e7\u00e3o esportiva e palestras sobre preven\u00e7\u00e3o de les\u00f5es.", "image_url": "esportes.png", "name": "Centro Comunit\u00e1rio de Esportes"}, {"budget": 50000.0, "contributions": 20000.0, "description": "O Jardim Comunit\u00e1rio para Seniores transforma terrenos subutilizados em hortas e canteiros de flores, promovendo terapia ocupacional e contato com a natureza. Idosos recebem sementes, ferramentas adaptadas e orienta\u00e7\u00e3o de agr\u00f4nomos volunt\u00e1rios.", "image_url": "jardim.png", "name": "Jardim Comunit\u00e1rio para Seniores"}, {"budget": 50000.0, "contributions": 20000.0, "description": "O Programa Musical Juvenil oferece aulas de viol\u00e3o, teclado e percuss\u00e3o para jovens em situa\u00e7\u00e3o de vulnerabilidade. Parcerias com conservat\u00f3rios promovem masterclasses e bolsas para apresenta\u00e7\u00f5es. Bandas formadas apresentam-se em concertos comunit\u00e1rios.", "image_url": "musical.png", "name": "Programa Musical Juvenil"}, {"budget": 50000.0, "contributions": 20000.0, "description": "Oficinas de Inclus\u00e3o Digital ensinam inform\u00e1tica b\u00e1sica, uso de smartphones e navega\u00e7\u00e3o segura. Aulas pr\u00e1ticas incluem e-mail, planilhas e processadores de texto, com tutoria de mentores volunt\u00e1rios e certifica\u00e7\u00e3o ao t\u00e9rmino.", "image_url": "digital.png", "name": "Oficinas de Inclus\u00e3o Digital"}, {"budget": 50000.0, "contributions": 20000.0, "description": "Iniciativa de refloresta\u00e7\u00e3o e limpeza de rios e parques urbanos. Volunt\u00e1rios plantam mudas nativas, monitoram fauna local e promovem oficinas de educa\u00e7\u00e3o ambiental. Instalam-se esta\u00e7\u00f5es de coleta de recicl\u00e1veis e relat\u00f3rios documentam impacto.", "image_url": "ambiental.png", "name": "Conserva\u00e7\u00e3o Ambiental"}, {"budget": 50000.0, "contributions": 20000.0, "description": "Campanha com cl\u00ednicas m\u00f3veis oferecendo consultas, aferi\u00e7\u00e3o de press\u00e3o arterial, vacina\u00e7\u00e3o e exames b\u00e1sicos em \u00e1reas rurais e favelas.", "image_url": "saude.png", "name": "Campanha de Acesso \u00e0 Sa\u00fade"}, {"budget": 50000.0, "contributions": 20000.0, "description": "Programa de Bolsas de Estudo para estudantes de baixa renda no ensino m\u00e9dio e superior, com mentoria, orienta\u00e7\u00e3o vocacional e apoio psicol\u00f3gico.", "image_url": "estudo.png", "name": "Bolsas de Estudo"}, {"budget": 50000.0, "contributions": 20000.0, "description": "Projeto de restaura\u00e7\u00e3o de edif\u00edcios hist\u00f3ricos e murais art\u00edsticos, com avalia\u00e7\u00e3o estrutural, limpeza de fachadas e oficinas de restauro.", "image_url": "cultural.png", "name": "Restaura\u00e7\u00e3o do Patrim\u00f4nio Cultural"}, {"budget": 50000.0, "contributions": 20000.0, "description": "Instala\u00e7\u00e3o de sistemas de filtragem comunit\u00e1ria e pontos de distribui\u00e7\u00e3o de \u00e1gua pot\u00e1vel, com treinamento para manuten\u00e7\u00e3o e pain\u00e9is informativos.", "image_url": "agua.png", "name": "Projeto \u00c1gua Limpa"}, {"budget": 50000.0, "contributions": 20000.0, "description": "Expans\u00e3o do Banco de Alimentos com moderniza\u00e7\u00e3o de c\u00e2maras frias e otimiza\u00e7\u00e3o de log\u00edstica, al\u00e9m de a\u00e7\u00f5es de educa\u00e7\u00e3o nutricional.", "image_url": "alimentos.png", "name": "Expans\u00e3o do Banco de Alimentos"}];
+    const content = document.getElementById('content');
+    function render(p) {
+      content.innerHTML = `
+        <h2 style="color:var(--rotary-gold);margin-top:0">${p.name}</h2>
+        <img class="hero" src="${p.image_url}" alt="${p.name}">
+        <p>${p.description}</p>
+        <p><span class="label">Orçamento:</span> R$ ${p.budget.toLocaleString('pt-BR',{minimumFractionDigits:2})}</p>
+        <p><span class="label">Contribuições:</span> R$ ${p.contributions.toLocaleString('pt-BR',{minimumFractionDigits:2})}</p>
+        <p><span class="label">Progresso:</span> <meter value="${p.contributions}" min="0" max="${p.budget}"></meter> ${(p.contributions/p.budget*100).toFixed(1)}%</p>
+      `;
+    }
+    document.querySelectorAll('.side-card').forEach(c => {
+      c.addEventListener('click', () => {
+        document.querySelectorAll('.side-card').forEach(x => x.classList.remove('active'));
+        c.classList.add('active');
+        render(projects.find(pg => pg.name === c.dataset.name));
+      });
+    });
+    document.querySelector('.side-card').classList.add('active');
+    render(projects[0]);
+  </script>
 </body>
 </html>
